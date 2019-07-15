@@ -22,3 +22,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/chat', 'ChatController@index')->name('chat');
 
 Route::get('/message', 'MessageController@index')->name('message');
+
+Route::post('/message', 'MessageController@store')->name('message.store');

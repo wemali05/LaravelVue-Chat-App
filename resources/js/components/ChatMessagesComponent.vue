@@ -5,16 +5,25 @@
 </template>
 
 <script>
+   import Event from '../event.js';
+
     export default {
-        data(){
-            return{
+        data() {
+            return {
                 messages: []
             }
         },
         mounted() {
-          axios.get('/message').then((response) => {
-              this.messages = response.data;
-          })
+            axios.get('/message').then((response) => {
+                console.log(response.data);
+                this.messages = response.data;
+            });
+            Event.$on('added_message', (message) => {
+                this.messages.unshift(message);
+                if(message.selfMessage) {
+                    this.$refs.message.scrollTop = 0;
+                }
+            });
         }
     }
 </script>

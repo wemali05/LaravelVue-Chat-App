@@ -2,9 +2,12 @@
     <div>
         <form class="form">
             <textarea 
-                cols="25"
+                id="body"
+                cols="28"
                 rows="5"
-                class="form-input">
+                class="form-input"
+                @keydown ="typing"
+                v-model="body">
             </textarea>
             <span class="notice">
                 Hit Return to send a message
@@ -14,9 +17,44 @@
 </template>
 
 <script>
+    import Event from '../event.js';
+
     export default {
-        mounted() {
-            console.log('Component mounted.')
+        data() {
+            return {
+                body: null
+            }
+        },
+        methods: {
+            typing(e) {
+                if(e.keyCode === 13 && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }        
+            },
+            sendMessage() {
+                if(!this.body || this.body.trim() === '') {
+                    return
+                }
+                let messageObj = this.buildMessage();
+                Event.$emit('added_message', messageObj);
+                  axios.post('/message', {
+                body: this.body.trim()
+                  }).catch(() => {
+                 console.log('failed');
+                });
+                this.body = null;
+            },
+            buildMessage() {
+                return {
+                    id: Date.now(),
+                    body: this.body,
+                    selfMessage: true,
+                    user: {
+                        name: Laravel.user.name
+                    }
+                }
+            }
         }
     }
 </script>

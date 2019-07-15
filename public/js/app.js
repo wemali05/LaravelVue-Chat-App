@@ -1865,6 +1865,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _event_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../event.js */ "./resources/js/event.js");
 //
 //
 //
@@ -1880,9 +1881,47 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log('Component mounted.');
+  data: function data() {
+    return {
+      body: null
+    };
+  },
+  methods: {
+    typing: function typing(e) {
+      if (e.keyCode === 13 && !e.shiftKey) {
+        e.preventDefault();
+        this.sendMessage();
+      }
+    },
+    sendMessage: function sendMessage() {
+      if (!this.body || this.body.trim() === '') {
+        return;
+      }
+
+      var messageObj = this.buildMessage();
+      _event_js__WEBPACK_IMPORTED_MODULE_0__["default"].$emit('added_message', messageObj);
+      axios.post('/message', {
+        body: this.body.trim()
+      })["catch"](function () {
+        console.log('failed');
+      });
+      this.body = null;
+    },
+    buildMessage: function buildMessage() {
+      return {
+        id: Date.now(),
+        body: this.body,
+        selfMessage: true,
+        user: {
+          name: Laravel.user.name
+        }
+      };
+    }
   }
 });
 
@@ -1897,12 +1936,14 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _event_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../event.js */ "./resources/js/event.js");
 //
 //
 //
 //
 //
 //
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1913,7 +1954,15 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     axios.get('/message').then(function (response) {
+      console.log(response.data);
       _this.messages = response.data;
+    });
+    _event_js__WEBPACK_IMPORTED_MODULE_0__["default"].$on('added_message', function (message) {
+      _this.messages.unshift(message);
+
+      if (message.selfMessage) {
+        _this.$refs.message.scrollTop = 0;
+      }
     });
   }
 });
@@ -38146,27 +38195,38 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", [
-      _c("form", { staticClass: "form" }, [
-        _c("textarea", {
-          staticClass: "form-input",
-          attrs: { cols: "25", rows: "5" }
-        }),
-        _vm._v(" "),
-        _c("span", { staticClass: "notice" }, [
-          _vm._v("\n            Hit Return to send a message\n        ")
-        ])
+  return _c("div", [
+    _c("form", { staticClass: "form" }, [
+      _c("textarea", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.body,
+            expression: "body"
+          }
+        ],
+        staticClass: "form-input",
+        attrs: { id: "body", cols: "28", rows: "5" },
+        domProps: { value: _vm.body },
+        on: {
+          keydown: _vm.typing,
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.body = $event.target.value
+          }
+        }
+      }),
+      _vm._v(" "),
+      _c("span", { staticClass: "notice" }, [
+        _vm._v("\n            Hit Return to send a message\n        ")
       ])
     ])
-  }
-]
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -50949,6 +51009,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_UserComponent_vue_vue_type_template_id_7f050fd2___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
+
+/***/ }),
+
+/***/ "./resources/js/event.js":
+/*!*******************************!*\
+  !*** ./resources/js/event.js ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
+//event js
+
+/* harmony default export */ __webpack_exports__["default"] = (new vue__WEBPACK_IMPORTED_MODULE_0___default.a());
 
 /***/ }),
 
